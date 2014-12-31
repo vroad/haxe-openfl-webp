@@ -10,3 +10,6 @@
 
 *.dmg
 Thumbs.db
+*.ndll
+*.so
+*.a
