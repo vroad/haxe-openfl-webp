@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
+	<set name="openfl-next" value="1" if="nodejs" />
+	
 	<meta title="Webp example" package="example" version="1.0.0" company="OpenFL Technologies" />
 	<app main="Main" path="Export" file="webp-example" />
 	
@@ -10,6 +12,7 @@
 	<haxelib name="openfl-webp" />
 
 	<assets path="Assets" rename="assets" exclude="*.svg" />
+	<haxedef name="source-map-content" if="nodejs" />
 	<!--
 	<icon path="Assets/openfl.svg" />
 	-->

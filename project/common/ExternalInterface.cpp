@@ -79,25 +79,29 @@ extern "C" {
 		buffer data_buffer = val_to_buffer(data_buffer_value);
 		int    data_len = buffer_size(data_buffer);
 		char  *data_ptr = buffer_data(data_buffer);
-		int webp_width = -1, webp_height = -1;
-		char *webp_data_ptr = (char *)WebPDecodeARGB((const unsigned char *)data_ptr, data_len, &webp_width, &webp_height);
-		int webp_data_len = webp_width * webp_height * 4;
+
+		WebPBitstreamFeatures features = {0};
+		VP8StatusCode code = WebPGetFeatures((const unsigned char *)data_ptr, data_len, &features);
+		
+		if (code != VP8_STATUS_OK) {
+			val_throw(alloc_string("webp_get_features: Error: (code != VP8_STATUS_OK)"));
+			return alloc_null();
+		}
+
+		int webp_data_len = features.width * features.height * 4;
+		buffer webp_buffer = alloc_buffer_len(webp_data_len);
+
+		char *webp_data_ptr = (char *)WebPDecodeARGBInto((const unsigned char *)data_ptr, data_len, (uint8_t*)buffer_data(webp_buffer), webp_data_len, features.width * 4);
 		
 		if (webp_data_ptr == NULL) {
 			val_throw(alloc_string("webp_decode_argb: Invalid webp data"));
 			return alloc_null();
 		}
-		
-		buffer webp_buffer = alloc_buffer_len(0);
-		buffer_append_sub(webp_buffer, webp_data_ptr, webp_data_len);
-		buffer_set_size(webp_buffer, webp_data_len);
 
 		value array = alloc_array(3);
-		val_array_set_i(array, 0, alloc_int(webp_width));
-		val_array_set_i(array, 1, alloc_int(webp_height));
+		val_array_set_i(array, 0, alloc_int(features.width));
+		val_array_set_i(array, 1, alloc_int(features.height));
 		val_array_set_i(array, 2, buffer_val(webp_buffer));
-		
-		if (webp_data_ptr != NULL) free(webp_data_ptr);
 		
 		return array;
 	}
@@ -175,9 +179,8 @@ extern "C" {
 		
 		printf("output_size: (%d, %d, %d) : %d\n", width, height, stride, output_size);
 
-		buffer output_buffer = alloc_buffer_len(0);
-		buffer_append_sub(output_buffer, (char *)output, output_size);
-		buffer_set_size(output_buffer, output_size);
+		buffer output_buffer = alloc_buffer_len(output_size);
+		memcpy(buffer_data(output_buffer), output, output_size);
 
 		if (output != NULL) free(output);
 		if (rgba != NULL) free(rgba);

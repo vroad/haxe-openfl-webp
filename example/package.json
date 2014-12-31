@@ -1,0 +1,22 @@
+{
+  "name": "openfl-webp-example",
+  "version": "1.0.0",
+  "description": "An example which decodes a webp image",
+  "main": "ApplicationMain.js",
+  "scripts": {
+    "test": "node ApplicationMain.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soywiz/haxe-openfl-webp"
+  },
+  "keywords": [
+    "webp"
+  ],
+  "author": "soywiz",
+  "license": "Unknown",
+  "bugs": {
+    "url": "https://github.com/vroad/haxe-openfl-webp/issues"
+  },
+  "homepage": "https://github.com/vroad/haxe-openfl-webp"
+}
