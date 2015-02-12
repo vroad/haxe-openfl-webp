@@ -60,9 +60,9 @@ class Webp {
 	 */
 	static public function decodeAsBitmapData(bytes:ByteArray):BitmapData {
 #if nodejs
-		return _decode(WebpRaw.webp_decode_argb(bytes.byteView));
+		return _decode(WebpRaw.webp_decode_rgba(bytes.byteView));
 #else
-		return _decode(WebpRaw.webp_decode_argb(bytes));
+		return _decode(WebpRaw.webp_decode_rgba(bytes));
 #end
 	}
 
@@ -81,7 +81,7 @@ class Webp {
 #else
 		var input_bytes = bitmapData.getPixels(bitmapData.rect);
 #end
-		return ByteArray.fromBytes(Bytes.ofData(WebpRaw.webp_encode_argb(input_bytes, bitmapData.width, bitmapData.height, lossless, quality_factor)));
+		return ByteArray.fromBytes(Bytes.ofData(WebpRaw.webp_encode_rgba(input_bytes, bitmapData.width, bitmapData.height, lossless, quality_factor)));
 	}
 
 	static private function _decode(arr:Array<Dynamic>):BitmapData {

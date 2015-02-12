@@ -71,9 +71,9 @@ extern "C" {
 		return array;
 	}
 	
-	DEFINE_FUNC_1(webp_decode_argb, data_buffer_value) {
+	DEFINE_FUNC_1(webp_decode_rgba, data_buffer_value) {
 		if (!val_is_buffer(data_buffer_value)) {
-			val_throw(alloc_string("webp_decode_argb: Expected to be a buffer"));
+			val_throw(alloc_string("webp_decode_rgba: Expected to be a buffer"));
 			return alloc_null();
 		}
 		buffer data_buffer = val_to_buffer(data_buffer_value);
@@ -91,10 +91,10 @@ extern "C" {
 		int webp_data_len = features.width * features.height * 4;
 		buffer webp_buffer = alloc_buffer_len(webp_data_len);
 
-		char *webp_data_ptr = (char *)WebPDecodeARGBInto((const unsigned char *)data_ptr, data_len, (uint8_t*)buffer_data(webp_buffer), webp_data_len, features.width * 4);
+		char *webp_data_ptr = (char *)WebPDecodeRGBAInto((const unsigned char *)data_ptr, data_len, (uint8_t*)buffer_data(webp_buffer), webp_data_len, features.width * 4);
 		
 		if (webp_data_ptr == NULL) {
-			val_throw(alloc_string("webp_decode_argb: Invalid webp data"));
+			val_throw(alloc_string("webp_decode_rgba: Invalid webp data"));
 			return alloc_null();
 		}
 
@@ -106,7 +106,7 @@ extern "C" {
 		return array;
 	}
 
-	DEFINE_FUNC_5(webp_encode_argb, data_buffer_value, width_value, height_value, lossless_value, quality_factor_value) {
+	DEFINE_FUNC_5(webp_encode_rgba, data_buffer_value, width_value, height_value, lossless_value, quality_factor_value) {
 		int width = 0;
 		int height = 0;
 		float quality_factor = 100;
@@ -130,14 +130,14 @@ extern "C" {
 		bytes_size = pixels_size * 4;
 		
 		if (!val_is_buffer(data_buffer_value)) {
-			val_throw(alloc_string("webp_encode_argb: Expected to be a buffer"));
+			val_throw(alloc_string("webp_encode_rgba: Expected to be a buffer"));
 			return alloc_null();
 		}
 		
 		data_buffer = val_to_buffer(data_buffer_value);
 		
 		if (bytes_size != buffer_size(data_buffer)) {
-			val_throw(alloc_string("webp_encode_argb: Invalid buffer size"));
+			val_throw(alloc_string("webp_encode_rgba: Invalid buffer size"));
 			return alloc_null();
 		}
 		
