@@ -62,7 +62,7 @@ class Webp {
 #if nodejs
 		return _decode(WebpRaw.webp_decode_rgba(bytes.byteView));
 #else
-		return _decode(WebpRaw.webp_decode_rgba(bytes));
+		return _decode(WebpRaw.webp_decode_rgba(bytes.getData()));
 #end
 	}
 
