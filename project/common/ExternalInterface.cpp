@@ -84,7 +84,7 @@ extern "C" {
 		VP8StatusCode code = WebPGetFeatures((const unsigned char *)data_ptr, data_len, &features);
 		
 		if (code != VP8_STATUS_OK) {
-			val_throw(alloc_string("webp_get_features: Error: (code != VP8_STATUS_OK)"));
+			val_throw(alloc_string("webp_decode_rgba: Error: (code != VP8_STATUS_OK)"));
 			return alloc_null();
 		}
 
