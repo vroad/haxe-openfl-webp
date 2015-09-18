@@ -6,14 +6,14 @@
 #define NEKO_COMPATIBLE
 #endif
 
-#include <hx/CFFI.h>
+#include <hx/CFFIPrime.h>
 
 #include "../webp/webp/decode.h"
 #include "../webp/webp/encode.h"
 #include <string.h>
 #include <stdio.h>
 
-#define DEFINE_FUNC(COUNT, NAME, ...) value NAME(__VA_ARGS__); DEFINE_PRIM(NAME, COUNT); value NAME(__VA_ARGS__)
+#define DEFINE_FUNC(COUNT, NAME, ...) value NAME(__VA_ARGS__); DEFINE_PRIME##COUNT(NAME); value NAME(__VA_ARGS__)
 #define DEFINE_FUNC_0(NAME) DEFINE_FUNC(0, NAME)
 #define DEFINE_FUNC_1(NAME, PARAM1) DEFINE_FUNC(1, NAME, value PARAM1)
 #define DEFINE_FUNC_2(NAME, PARAM1, PARAM2) DEFINE_FUNC(2, NAME, value PARAM1, value PARAM2)
@@ -71,9 +71,9 @@ extern "C" {
 		return array;
 	}
 	
-	DEFINE_FUNC_1(webp_decode_rgba, data_buffer_value) {
+	DEFINE_FUNC_1(webp_decode_bgra, data_buffer_value) {
 		if (!val_is_buffer(data_buffer_value)) {
-			val_throw(alloc_string("webp_decode_rgba: Expected to be a buffer"));
+			val_throw(alloc_string("webp_decode_bgra: Expected to be a buffer"));
 			return alloc_null();
 		}
 		buffer data_buffer = val_to_buffer(data_buffer_value);
@@ -84,17 +84,17 @@ extern "C" {
 		VP8StatusCode code = WebPGetFeatures((const unsigned char *)data_ptr, data_len, &features);
 		
 		if (code != VP8_STATUS_OK) {
-			val_throw(alloc_string("webp_decode_rgba: Error: (code != VP8_STATUS_OK)"));
+			val_throw(alloc_string("webp_decode_bgra: Error: (code != VP8_STATUS_OK)"));
 			return alloc_null();
 		}
 
 		int webp_data_len = features.width * features.height * 4;
 		buffer webp_buffer = alloc_buffer_len(webp_data_len);
 
-		char *webp_data_ptr = (char *)WebPDecodeRGBAInto((const unsigned char *)data_ptr, data_len, (uint8_t*)buffer_data(webp_buffer), webp_data_len, features.width * 4);
+		char *webp_data_ptr = (char *)WebPDecodeBGRAInto((const unsigned char *)data_ptr, data_len, (uint8_t*)buffer_data(webp_buffer), webp_data_len, features.width * 4);
 		
 		if (webp_data_ptr == NULL) {
-			val_throw(alloc_string("webp_decode_rgba: Invalid webp data"));
+			val_throw(alloc_string("webp_decode_bgra: Invalid webp data"));
 			return alloc_null();
 		}
 
@@ -106,7 +106,7 @@ extern "C" {
 		return array;
 	}
 
-	DEFINE_FUNC_5(webp_encode_rgba, data_buffer_value, width_value, height_value, lossless_value, quality_factor_value) {
+	DEFINE_FUNC_5(webp_encode_bgra, data_buffer_value, width_value, height_value, lossless_value, quality_factor_value) {
 		int width = 0;
 		int height = 0;
 		float quality_factor = 100;
@@ -130,14 +130,14 @@ extern "C" {
 		bytes_size = pixels_size * 4;
 		
 		if (!val_is_buffer(data_buffer_value)) {
-			val_throw(alloc_string("webp_encode_rgba: Expected to be a buffer"));
+			val_throw(alloc_string("webp_encode_bgra: Expected to be a buffer"));
 			return alloc_null();
 		}
 		
 		data_buffer = val_to_buffer(data_buffer_value);
 		
 		if (bytes_size != buffer_size(data_buffer)) {
-			val_throw(alloc_string("webp_encode_rgba: Invalid buffer size"));
+			val_throw(alloc_string("webp_encode_bgra: Invalid buffer size"));
 			return alloc_null();
 		}
 		
@@ -161,14 +161,14 @@ extern "C" {
 		}
 
 		if (lossless) {
-			output_size = WebPEncodeLosslessRGBA(
+			output_size = WebPEncodeLosslessBGRA(
 				rgba,
 				//abgr,
 				width, height, stride,
 				&output
 			);
 		} else {
-			output_size = WebPEncodeRGBA(
+			output_size = WebPEncodeBGRA(
 				rgba,
 				//abgr,
 				width, height, stride,

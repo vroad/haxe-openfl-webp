@@ -37,7 +37,7 @@ class Webp {
 	 * @return Information about the image
 	 */
 	static public function getImageInfo(bytes:ByteArray):WebpInfo {
-		var infoArray = WebpRaw.webp_get_info((bytes));
+		var infoArray = WebpRaw.webp_get_features(getBufferFromByteArray(bytes));
 		var info:WebpInfo = new WebpInfo();
 		
 		info.width = infoArray[0];
@@ -59,11 +59,7 @@ class Webp {
 	 * @return BitmapData with the image
 	 */
 	static public function decodeAsBitmapData(bytes:ByteArray):BitmapData {
-#if nodejs
-		return _decode(WebpRaw.webp_decode_rgba(bytes.byteView));
-#else
-		return _decode(WebpRaw.webp_decode_rgba(bytes.getData()));
-#end
+		return _decode(WebpRaw.webp_decode_bgra(getBufferFromByteArray(bytes)));
 	}
 
 	/**
@@ -81,7 +77,7 @@ class Webp {
 #else
 		var input_bytes = bitmapData.getPixels(bitmapData.rect);
 #end
-		return ByteArray.fromBytes(Bytes.ofData(WebpRaw.webp_encode_rgba(input_bytes, bitmapData.width, bitmapData.height, lossless, quality_factor)));
+		return ByteArray.fromBytes(Bytes.ofData(WebpRaw.webp_encode_bgra(input_bytes, bitmapData.width, bitmapData.height, lossless, quality_factor)));
 	}
 
 	static private function _decode(arr:Array<Dynamic>):BitmapData {
@@ -93,5 +89,13 @@ class Webp {
 		var bitmapData:BitmapData = new BitmapData(width, height);
 		bitmapData.setPixels(bitmapData.rect, ByteArray.fromBytes(bytes));
 		return bitmapData;
-	}	
+	}
+	
+	private static function getBufferFromByteArray(byteArray:ByteArray):Dynamic {
+		#if nodejs
+		return byteArray.byteView;
+		#else
+		return byteArray;
+		#end
+	}
 }

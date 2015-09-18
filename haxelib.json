@@ -8,7 +8,6 @@
   "version": "0.0.7",
   "url": "https://github.com/soywiz/haxe-openfl-webp",
   "dependencies": {
-    "openfl": "",
-    "hxcpp": ""
+    "openfl": ""
   }
 }
